@@ -1,11 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 
-const randRoom = () => {
-  return uuidv4().replaceAll("-", "").slice(0, 15).toUpperCase();
+const genRoom = () => {
+  // return uuidv4().replaceAll("-", "").slice(0, 15).toUpperCase();
+  return "12345";
 };
 
-const randPiece = () => {
+const randomPiece = () => {
   return Math.random() > 0.5 ? "X" : "O";
 };
 
-module.exports = { randRoom, randPiece };
+module.exports = { genRoom, randomPiece };

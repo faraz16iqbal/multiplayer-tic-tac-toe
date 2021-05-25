@@ -1,10 +1,50 @@
+import cors from "cors";
+import Player from "./utils/player.js";
+import Board from "./utils/board.js";
+import { genRoom, randomPiece } from "./utils/helper.js";
 const app = require("express")();
 const httpServer = require("http").createServer(app);
 const io = require("socket.io")(httpServer);
 
-console.log(id);
+app.use(cors());
 
-let rooms = 0;
+// map to store room data {roomid:str, players:Array(2)}
+let rooms = new Map();
+
+// let newRoom = new
+const makeNewRoom = async () => {
+  let newRoom = await genRoom();
+  while (rooms.has(newRoom)) {
+    newRoom = await genRoom();
+  }
+
+  rooms.set(newRoom, { roomId: newRoom, players: [], board: null });
+  console.log(rooms);
+};
+
+const joinRoom = async (player, room) => {
+  let currentRoom = await rooms.get("12345");
+  let updatedPlayerList = currentRoom.players.push(player);
+  rooms = { ...currentRoom, players: updatedPlayerList };
+};
+
+const quit = (room) => {
+  let tempRoom = rooms.get(room);
+  tempRoom.players.pop();
+};
+
+const getNumOfPlayers = (room) => {
+  return rooms.get(room).players.length;
+};
+
+const asignPiece = (room) => {
+  const firstPiece = randPiece();
+  const lastPiece = firstPiece === "X" ? "O" : "X";
+
+  let currentRoom = rooms.get(room);
+  currentRoom.players[0].piece = firstPiece;
+  currentRoom.players[1].piece = lastPiece;
+};
 
 io.on("connection", (socket) => {
   console.log("a user has entered");
