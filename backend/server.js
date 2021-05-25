@@ -1,23 +1,61 @@
-import { v4 as uuidv4 } from 'uuid';
-import { winCombinations } from './utils/combinations.js';
-const app = require('express')();
-const httpServer = require('http').createServer(app);
-const io = require('socket.io')(httpServer);
-process.setMaxListeners(0);
+const app = require("express")();
+const httpServer = require("http").createServer(app);
+const io = require("socket.io")(httpServer);
 
-const id = uuidv4().replaceAll('-', '').slice(0, 10).toUpperCase();
 console.log(id);
 
-io.on('connection', (socket) => {
-  console.log('a user has entered');
-  //   socket.emit('connected', { id: socket.id }); // STEP 5 ::=> Notify request cllient that it is not connected with server
+let rooms = 0;
 
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
+io.on("connection", (socket) => {
+  console.log("a user has entered");
+  socket.emit("connected", { id: socket.id }); // STEP 5 ::=> Notify request cllient that it is not connected with server
+
+  socket.on("test", (msg) => {
+    io.emit("message", msg);
+  });
+
+  socket.on("createGame", function (data) {
+    socket.join("room-" + ++rooms);
+    socket.emit("newGame", { name: data.name, room: "room-" + rooms });
+  });
+
+  /**
+   * Connect the Player 2 to the room he requested. Show error if room full.
+   */
+  socket.on("joinGame", function (data) {
+    var room = io.nsps["/"].adapter.rooms[data.room];
+    if (room && room.length == 1) {
+      socket.join(data.room);
+      socket.broadcast.to(data.room).emit("player1", {});
+      socket.emit("player2", { name: data.name, room: data.room });
+    } else {
+      socket.emit("err", { message: "Sorry, The room is full!" });
+    }
+  });
+
+  /**
+   * Handle the turn played by either player and notify the other.
+   */
+  socket.on("playTurn", function (data) {
+    socket.broadcast.to(data.room).emit("turnPlayed", {
+      tile: data.tile,
+      room: data.room,
+    });
+  });
+
+  /**
+   * Notify the players about the victor.
+   */
+  socket.on("gameEnded", function (data) {
+    socket.broadcast.to(data.room).emit("gameEnd", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 httpServer.listen(PORT, () =>
   console.log(`Server running on : http://localhost:${PORT}`)
