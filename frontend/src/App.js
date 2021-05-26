@@ -7,7 +7,7 @@ const App = () => {
   const [message, setMessage] = useState(null);
   const [room, setRoom] = useState("");
   const [name, setName] = useState("");
-  const [msg, setMsg] = useState("");
+  // const [msg, setMsg] = useState("");
 
   useEffect(() => {
     socket.on("connected", (data) => {
@@ -34,19 +34,21 @@ const App = () => {
       console.log(data);
       // setRoom(temp);
     });
+    socket.on("starting", (data) => {
+      console.log(data);
+    });
   }, []);
 
-  function joinRoom(e) {
+  const joinRoom = (e) => {
     e.preventDefault();
     const roomObj = {
       name,
       room,
     };
-
     setRoom("");
     setName("");
     socket.emit("newRoomJoin", roomObj);
-  }
+  };
 
   const newRoom = (e) => {
     e.preventDefault();
@@ -65,8 +67,8 @@ const App = () => {
         <input
           type="text"
           placeholder="Enter code to join room"
-          value={msg}
-          onChange={(e) => setMsg(e.target.value)}
+          value={room}
+          onChange={(e) => setRoom(e.target.value)}
         />
         <button type="submit">Join Room</button>
       </form>

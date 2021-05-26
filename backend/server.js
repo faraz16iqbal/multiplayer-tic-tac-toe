@@ -47,13 +47,21 @@ const getNumOfPlayers = (room) => {
 };
 
 const asignPiece = (room) => {
-  const firstPiece = randPiece();
+  const firstPiece = randomPiece();
   const lastPiece = firstPiece === "X" ? "O" : "X";
 
   let currentRoom = rooms.get(room);
   currentRoom.players[0].piece = firstPiece;
   currentRoom.players[1].piece = lastPiece;
 };
+
+const newGame = (room) => {
+  let currentRoom = rooms.get(room);
+  const board = new Board();
+  currentRoom.board = board;
+};
+
+// SOCKET LOGIC
 
 io.on("connection", (socket) => {
   console.log("a user has entered");
@@ -75,6 +83,7 @@ io.on("connection", (socket) => {
       io.to(socket.id).emit("joinError");
     }
 
+    console.log(room, name);
     //Put the new player into the room
     socket.join(room);
     const id = socket.id;
@@ -95,28 +104,29 @@ io.on("connection", (socket) => {
     else if (peopleInRoom === 2) {
       //Assign the piece to each player in the backend data structure and then
       //emit it to each of the player so they can store it in their state
-      console.log("HERE2");
 
       asignPiece(room);
-      currentPlayers = await rooms.get(room).players;
+      console.log("HERE2");
+      const currentPlayers = rooms.get(room).players;
       for (const player of currentPlayers) {
         io.to(player.id).emit("pieceAssignment", {
           piece: player.piece,
           id: player.id,
         });
       }
-      // newGame(room);
+      // start game
+      newGame(room);
 
       // //When starting, the game state, turn and the list of both players in
       // //the room are required in the front end to render the correct information
-      // const currentRoom = rooms.get(room);
-      // const gameState = currentRoom.board.game;
-      // const turn = currentRoom.board.turn;
-      // const players = currentRoom.players.map((player) => [
-      //   player.id,
-      //   player.name,
-      // ]);
-      // io.to(room).emit("starting", { gameState, players, turn });
+      const currentRoom = rooms.get(room);
+      const gameState = currentRoom.board.game;
+      const turn = currentRoom.board.turn;
+      const players = currentRoom.players.map((player) => [
+        player.id,
+        player.name,
+      ]);
+      io.to(room).emit("starting", { gameState, players, turn });
     }
 
     //Too many people so we kick them out of the room and redirect
