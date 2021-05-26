@@ -1,65 +1,21 @@
 import cors from "cors";
 import Player from "./utils/player.js";
 import Board from "./utils/board.js";
-import { genRoom, randomPiece } from "./utils/helper.js";
 const app = require("express")();
 const httpServer = require("http").createServer(app);
 const io = require("socket.io")(httpServer);
 
+import {
+  rooms,
+  makeNewRoom,
+  joinRoom,
+  newGame,
+  quit,
+  getNumOfPlayers,
+  assignPiece,
+} from "./utils/functions";
+
 app.use(cors());
-
-// map to store room data {roomid:str, players:Array(2)}
-let rooms = new Map();
-
-// let newRoom = new
-const makeNewRoom = async () => {
-  let newRoom = await genRoom();
-  while (rooms.has(newRoom)) {
-    newRoom = await genRoom();
-  }
-
-  rooms.set(newRoom, { roomId: newRoom, players: [], board: null });
-  return newRoom;
-};
-
-const joinRoom = async (player, room) => {
-  try {
-    let currentRoom = rooms.get(room);
-    currentRoom.players.push(player);
-    rooms.set(room, { ...currentRoom, players: updatedPlayerList });
-  } catch (e) {
-    console.log("No such room found!");
-  }
-};
-
-const quit = (room) => {
-  let tempRoom = rooms.get(room);
-  tempRoom.players.pop();
-};
-
-const getNumOfPlayers = (room) => {
-  try {
-    console.log(rooms.get(room).players);
-    return rooms.get(room).players.length;
-  } catch (error) {
-    console.log("No matching id found");
-  }
-};
-
-const asignPiece = (room) => {
-  const firstPiece = randomPiece();
-  const lastPiece = firstPiece === "X" ? "O" : "X";
-
-  let currentRoom = rooms.get(room);
-  currentRoom.players[0].piece = firstPiece;
-  currentRoom.players[1].piece = lastPiece;
-};
-
-const newGame = (room) => {
-  let currentRoom = rooms.get(room);
-  const board = new Board();
-  currentRoom.board = board;
-};
 
 // SOCKET LOGIC
 
@@ -83,7 +39,6 @@ io.on("connection", (socket) => {
       io.to(socket.id).emit("joinError");
     }
 
-    console.log(room, name);
     //Put the new player into the room
     socket.join(room);
     const id = socket.id;
@@ -92,10 +47,7 @@ io.on("connection", (socket) => {
 
     //Get the number of player in the room
     const peopleInRoom = getNumOfPlayers(room);
-    console.log(peopleInRoom);
 
-    //Need another player so emit the waiting event
-    //to display the wait screen on the front end
     if (peopleInRoom === 1) {
       console.log("HERE");
       io.to(room).emit("waiting");
@@ -105,7 +57,7 @@ io.on("connection", (socket) => {
       //Assign the piece to each player in the backend data structure and then
       //emit it to each of the player so they can store it in their state
 
-      asignPiece(room);
+      assignPiece(room);
       console.log("HERE2");
       const currentPlayers = rooms.get(room).players;
       for (const player of currentPlayers) {
@@ -114,11 +66,10 @@ io.on("connection", (socket) => {
           id: player.id,
         });
       }
+
       // start game
       newGame(room);
 
-      // //When starting, the game state, turn and the list of both players in
-      // //the room are required in the front end to render the correct information
       const currentRoom = rooms.get(room);
       const gameState = currentRoom.board.game;
       const turn = currentRoom.board.turn;
@@ -127,17 +78,31 @@ io.on("connection", (socket) => {
         player.name,
       ]);
       io.to(room).emit("starting", { gameState, players, turn });
-    }
-
-    //Too many people so we kick them out of the room and redirect
-    //them to the main starting page
-    else if (peopleInRoom === 3) {
-      console.log("HERE3");
-
+    } else if (peopleInRoom === 3) {
       socket.leave(room);
       kick(room);
       io.to(socket.id).emit("joinError");
     }
+
+    socket.on("move", ({ room, piece, index }) => {
+      currentBoard = rooms.get(room).board;
+      currentBoard.move(index, piece);
+
+      if (currentBoard.checkWinner(piece)) {
+        io.to(room).emit("winner", {
+          gameState: currentBoard.game,
+          id: socket.id,
+        });
+      } else if (currentBoard.checkDraw()) {
+        io.to(room).emit("draw", { gameState: currentBoard.game });
+      } else {
+        currentBoard.switchTurn();
+        io.to(room).emit("update", {
+          gameState: currentBoard.game,
+          turn: currentBoard.turn,
+        });
+      }
+    });
   });
 
   socket.on("disconnect", () => {
