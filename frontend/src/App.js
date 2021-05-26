@@ -45,6 +45,7 @@ const App = () => {
       name,
       room,
     };
+    setMessage(name);
     setRoom("");
     setName("");
     socket.emit("newRoomJoin", roomObj);
@@ -76,11 +77,7 @@ const App = () => {
         New Room
       </button>
 
-      <h1>
-        {" "}
-        {message && message.id === yourID ? "You" : "User"} :{" "}
-        {message && message.body}
-      </h1>
+      <h1> {message && message}</h1>
     </div>
   );
 };
