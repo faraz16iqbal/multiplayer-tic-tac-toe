@@ -19,13 +19,17 @@ const makeNewRoom = async () => {
   }
 
   rooms.set(newRoom, { roomId: newRoom, players: [], board: null });
-  console.log(rooms);
+  return newRoom;
 };
 
 const joinRoom = async (player, room) => {
-  let currentRoom = await rooms.get("12345");
-  let updatedPlayerList = currentRoom.players.push(player);
-  rooms = { ...currentRoom, players: updatedPlayerList };
+  try {
+    let currentRoom = rooms.get(room);
+    currentRoom.players.push(player);
+    rooms.set(room, { ...currentRoom, players: updatedPlayerList });
+  } catch (e) {
+    console.log("No such room found!");
+  }
 };
 
 const quit = (room) => {
@@ -34,7 +38,12 @@ const quit = (room) => {
 };
 
 const getNumOfPlayers = (room) => {
-  return rooms.get(room).players.length;
+  try {
+    console.log(rooms.get(room).players);
+    return rooms.get(room).players.length;
+  } catch (error) {
+    console.log("No matching id found");
+  }
 };
 
 const asignPiece = (room) => {
@@ -50,44 +59,75 @@ io.on("connection", (socket) => {
   console.log("a user has entered");
   socket.emit("connected", { id: socket.id }); // STEP 5 ::=> Notify request cllient that it is not connected with server
 
+  //test
   socket.on("test", (msg) => {
     io.emit("message", msg);
   });
 
-  socket.on("createGame", function (data) {
-    socket.join("room-" + ++rooms);
-    socket.emit("newGame", { name: data.name, room: "room-" + rooms });
+  // working
+  socket.on("newGame", async () => {
+    const room = await makeNewRoom();
+    socket.emit("newGameCreated", room);
   });
 
-  /**
-   * Connect the Player 2 to the room he requested. Show error if room full.
-   */
-  socket.on("joinGame", function (data) {
-    var room = io.nsps["/"].adapter.rooms[data.room];
-    if (room && room.length == 1) {
-      socket.join(data.room);
-      socket.broadcast.to(data.room).emit("player1", {});
-      socket.emit("player2", { name: data.name, room: data.room });
-    } else {
-      socket.emit("err", { message: "Sorry, The room is full!" });
+  socket.on("newRoomJoin", async ({ room, name }) => {
+    if (room === "" || name === "") {
+      io.to(socket.id).emit("joinError");
     }
-  });
 
-  /**
-   * Handle the turn played by either player and notify the other.
-   */
-  socket.on("playTurn", function (data) {
-    socket.broadcast.to(data.room).emit("turnPlayed", {
-      tile: data.tile,
-      room: data.room,
-    });
-  });
+    //Put the new player into the room
+    socket.join(room);
+    const id = socket.id;
+    const newPlayer = new Player(name, room, id);
+    await joinRoom(newPlayer, room);
 
-  /**
-   * Notify the players about the victor.
-   */
-  socket.on("gameEnded", function (data) {
-    socket.broadcast.to(data.room).emit("gameEnd", data);
+    //Get the number of player in the room
+    const peopleInRoom = getNumOfPlayers(room);
+    console.log(peopleInRoom);
+
+    //Need another player so emit the waiting event
+    //to display the wait screen on the front end
+    if (peopleInRoom === 1) {
+      console.log("HERE");
+      io.to(room).emit("waiting");
+    }
+    //The right amount of people so we start the game
+    else if (peopleInRoom === 2) {
+      //Assign the piece to each player in the backend data structure and then
+      //emit it to each of the player so they can store it in their state
+      console.log("HERE2");
+
+      asignPiece(room);
+      currentPlayers = await rooms.get(room).players;
+      for (const player of currentPlayers) {
+        io.to(player.id).emit("pieceAssignment", {
+          piece: player.piece,
+          id: player.id,
+        });
+      }
+      // newGame(room);
+
+      // //When starting, the game state, turn and the list of both players in
+      // //the room are required in the front end to render the correct information
+      // const currentRoom = rooms.get(room);
+      // const gameState = currentRoom.board.game;
+      // const turn = currentRoom.board.turn;
+      // const players = currentRoom.players.map((player) => [
+      //   player.id,
+      //   player.name,
+      // ]);
+      // io.to(room).emit("starting", { gameState, players, turn });
+    }
+
+    //Too many people so we kick them out of the room and redirect
+    //them to the main starting page
+    else if (peopleInRoom === 3) {
+      console.log("HERE3");
+
+      socket.leave(room);
+      kick(room);
+      io.to(socket.id).emit("joinError");
+    }
   });
 
   socket.on("disconnect", () => {

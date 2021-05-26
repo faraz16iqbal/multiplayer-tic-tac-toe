@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { socket } from "./utils/socket";
 import "./App.css";
 
 const App = () => {
   const [yourID, setYourID] = useState(null);
   const [message, setMessage] = useState(null);
-  const [choice, setChoice] = useState("");
+  const [room, setRoom] = useState("");
+  const [name, setName] = useState("");
   const [msg, setMsg] = useState("");
 
   useEffect(() => {
@@ -16,30 +17,62 @@ const App = () => {
     socket.on("message", (m) => {
       setMessage(m);
     });
+
+    socket.on("newGameCreated", (temp) => {
+      console.log(temp);
+      setRoom(temp);
+    });
+    // socket.on("newRoomJoin", (data) => {
+    //   console.log(data);
+    //   // setRoom(temp);
+    // });
+    socket.on("waiting", () => {
+      console.log("WAITING");
+      // setRoom(temp);
+    });
+    socket.on("pieceAssignment", (data) => {
+      console.log(data);
+      // setRoom(temp);
+    });
   }, []);
 
-  function handleSubmit(e) {
+  function joinRoom(e) {
     e.preventDefault();
-    const messageObj = {
-      body: msg,
-      id: yourID,
+    const roomObj = {
+      name,
+      room,
     };
-    console.log(messageObj);
 
-    setMsg("");
-    socket.emit("test", messageObj);
+    setRoom("");
+    setName("");
+    socket.emit("newRoomJoin", roomObj);
   }
+
+  const newRoom = (e) => {
+    e.preventDefault();
+    socket.emit("newGame");
+  };
 
   return (
     <div className="App">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={joinRoom}>
         <input
           type="text"
+          placeholder="Enter Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Enter code to join room"
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
         />
-        <button type="submit">Submit</button>
+        <button type="submit">Join Room</button>
       </form>
+      <button onClick={newRoom} type="submit">
+        New Room
+      </button>
 
       <h1>
         {" "}
