@@ -32,6 +32,14 @@ input:focus {
 .div-spinner {
   margin: 0 auto;
 }
+
+.alert-class {
+  margin-bottom: 5rem !important;
+  width: 40% !important;
+  font-size: 1.25rem;
+  text-align: center;
+}
+
 /* :root {
   --square-width: 10vw;
   --dark-blue: #011f4b;

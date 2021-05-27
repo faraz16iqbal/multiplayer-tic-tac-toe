@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
-import e from "cors";
 import React, { useState, useEffect } from "react";
+import { Container } from "react-bootstrap";
 import Choice from "../components/Choice";
 import Error from "../components/Error";
 import InputForm from "../components/InputForm";
@@ -79,7 +78,7 @@ const HomeScreen = ({ history }) => {
     } else {
       console.log("here1");
 
-      setTimeout(() => setLoading(false), 500);
+      setTimeout(() => setLoading(false), 1000);
       displayError(
         newGame
           ? "Please fill out your name"
@@ -97,7 +96,7 @@ const HomeScreen = ({ history }) => {
     setTimeout(() => {
       setError(false);
       setErrorMessage("");
-    }, 3000);
+    }, 1000);
   };
 
   return (
@@ -105,7 +104,7 @@ const HomeScreen = ({ history }) => {
       {step === 1 ? (
         <Choice logo={logo} onChoice={onChoice} />
       ) : step === 2 ? (
-        <>
+        <Container className="d-flex flex-column align-items-center justify-content-center choice-container">
           <Loading loading={loading} />
           <Error display={error} message={errorMessage} />
           <InputForm
@@ -116,7 +115,7 @@ const HomeScreen = ({ history }) => {
             name={name}
             room={room}
           />
-        </>
+        </Container>
       ) : (
         ""
       )}

@@ -1,10 +1,11 @@
 import React from "react";
+import { Alert } from "react-bootstrap";
 
 const Error = ({ display, message }) => {
   return (
-    <div className="error" style={{ opacity: display ? "100%" : "0" }}>
-      <h1 className="error-message">{message}</h1>
-    </div>
+    <Alert variant="primary" className="alert-class" show={display}>
+      {message}
+    </Alert>
   );
 };
 
