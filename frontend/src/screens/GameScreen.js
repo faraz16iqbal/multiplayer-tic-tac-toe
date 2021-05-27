@@ -4,8 +4,9 @@ import qs from "qs";
 
 import { socket } from "../config/socket";
 import Wait from "../components/Wait";
-
-class Board extends Component {
+import Square from "../components/Square";
+import { Container } from "react-bootstrap";
+class GameSreen extends Component {
   state = {
     game: new Array(9).fill(null),
     piece: "X",
@@ -115,20 +116,6 @@ class Board extends Component {
     this.setState({ end: true, statusMessage: "Draw" });
   }
 
-  playAgainRequest = () => {
-    this.socket.emit("playAgainRequest", this.state.room);
-  };
-
-  //Handle the restart event from the back end
-  handleRestart(gameState, turn) {
-    this.setBoard(gameState);
-    this.setTurn(turn);
-    this.setMessage();
-    this.setState({ end: false });
-  }
-
-  //Some utilities methods to set the states of the board
-
   setMessage() {
     const message = this.state.turn
       ? "Your Turn"
@@ -147,45 +134,58 @@ class Board extends Component {
   setBoard(gameState) {
     this.setState({ game: gameState });
   }
+  renderSquare(i) {
+    const { game, piece, turn, end } = this.state;
 
-  // renderSquare(i) {
-  //   return (
-  //     <Square
-  //       key={i}
-  //       value={this.state.game[i]}
-  //       player={this.state.piece}
-  //       end={this.state.end}
-  //       id={i}
-  //       onClick={this.handleClick}
-  //       turn={this.state.turn}
-  //     />
-  //   );
-  // }
+    return (
+      <Square
+        key={i}
+        value={game[i]}
+        player={piece}
+        end={end}
+        id={i}
+        onClick={this.handleClick}
+        turn={turn}
+      />
+    );
+  }
 
   render() {
     const { history } = this.props;
+    const {
+      game,
+      piece,
+      joinError,
+      waiting,
+      room,
+      turn,
+      opponentPlayer,
+      currentPlayerScore,
+      end,
+      statusMessage,
+    } = this.state;
 
-    if (this.state.joinError) {
+    if (joinError) {
       history.push("/");
     } else {
-      // const squareArray = [];
-      // for (let i = 0; i < 9; i++) {
-      //   const newSquare = this.renderSquare(i);
-      //   squareArray.push(newSquare);
-      // }
+      const squareArray = [];
+      for (let i = 0; i < 9; i++) {
+        const newSquare = this.renderSquare(i);
+        squareArray.push(newSquare);
+      }
       return (
-        <>
+        <Container className="d-flex flex-column align-items-center justify-content-center choice-container">
           <Wait display={this.state.waiting} room={this.state.room} />
-          {/* <Status message={this.state.statusMessage}/>
-          <div className="board">
-            {squareArray}
-          </div>
+          <p className="turn">{statusMessage}</p>
+          <div className="board">{squareArray}</div>
+
+          {/* <Status message={this.s tate.statusMessage}/>
           <ScoreBoard data={{player1:['You', this.state.currentPlayerScore], player2:[this.state.opponentPlayer[0], this.state.opponentPlayer[1]]}}/>
           <PlayAgain end={this.state.end} onClick={this.playAgainRequest}/> */}
-        </>
+        </Container>
       );
     }
   }
 }
 
-export default Board;
+export default GameSreen;

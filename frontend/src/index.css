@@ -1,3 +1,7 @@
+:root {
+  --square-width: 10vw;
+}
+
 body {
   background: #348f50;
   background: -webkit-linear-gradient(to right, #56b4d3, #348f50);
@@ -87,8 +91,57 @@ input:focus {
   font-weight: 700;
 }
 
+.square {
+  width: var(--square-width);
+  height: var(--square-width);
+  min-width: 100px;
+  min-height: 100px;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.square:first-child,
+.square:nth-child(2),
+.square:nth-child(3) {
+  border-top: none;
+}
+
+.square:last-child,
+.square:nth-child(7),
+.square:nth-child(8) {
+  border-bottom: none;
+}
+
+.square:first-child,
+.square:nth-child(4),
+.square:nth-child(7) {
+  border-left: none;
+}
+
+.square:last-child,
+.square:nth-child(3),
+.square:nth-child(6) {
+  border-right: none;
+}
+
+.board {
+  display: grid;
+  width: max-content;
+  min-height: min-content;
+  grid-template-columns: repeat(3, auto);
+}
+
+.turn {
+  color: #fff;
+  margin-bottom: 6rem !important;
+  font-size: 3rem;
+  letter-spacing: 0.3rem;
+}
+
 /* :root {
-  --square-width: 10vw;
   --dark-blue: #011f4b;
   --mid-blue: #005b96;
   --light-blue: #b3cde0;

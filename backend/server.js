@@ -103,6 +103,7 @@ io.on("connection", (socket) => {
 
     // game logic
     socket.on("move", ({ room, piece, index }) => {
+      // console.log(room, piece, index);
       let currentBoard = rooms.get(room).board;
       currentBoard.move(index, piece);
 
