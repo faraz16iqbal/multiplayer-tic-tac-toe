@@ -2,7 +2,12 @@ import cors from "cors";
 import Player from "./utils/player.js";
 const app = require("express")();
 const httpServer = require("http").createServer(app);
-const io = require("socket.io")(httpServer);
+
+const io = require("socket.io")(httpServer, {
+  cors: {
+    origin: "*",
+  },
+});
 
 import {
   rooms,
@@ -106,6 +111,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnecting", () => {
+    console.log("User disconnected");
     //Get all the rooms that the socket is currently subscribed to
     const currentRooms = Object.keys(socket.rooms);
     //In this game an object can only have 2 rooms max so we check for that
@@ -130,7 +136,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 
 httpServer.listen(PORT, () =>
   console.log(`Server running on : http://localhost:${PORT}`)
