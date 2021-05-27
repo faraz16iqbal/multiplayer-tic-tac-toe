@@ -55,7 +55,11 @@ const HomeScreen = ({ history }) => {
   };
 
   const onTyping = (e) => {
-    setName(e.target.value);
+    if (e.target.name === "name") {
+      setName(e.target.value);
+    } else {
+      setRoom(e.target.value);
+    }
   };
 
   const validate = () => {

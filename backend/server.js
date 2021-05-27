@@ -5,7 +5,7 @@ const httpServer = require("http").createServer(app);
 
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: "http://localhost:3001",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
     credentials: true,
     transports: ["websocket", "polling"],
@@ -38,7 +38,6 @@ io.on("connection", (socket) => {
   // working
   socket.on("newGame", async () => {
     const room = await makeNewRoom();
-    console.log(room);
     socket.emit("newGameCreated", room);
   });
 
@@ -75,8 +74,9 @@ io.on("connection", (socket) => {
       //emit it to each of the player so they can store it in their state
 
       assignPiece(room);
-      console.log("HERE2");
       const currentPlayers = rooms.get(room).players;
+
+      console.log(currentPlayers);
       for (const player of currentPlayers) {
         io.to(player.id).emit("pieceAssignment", {
           piece: player.piece,
