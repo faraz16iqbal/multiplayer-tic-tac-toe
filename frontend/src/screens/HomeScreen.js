@@ -70,7 +70,6 @@ const HomeScreen = ({ history }) => {
     setLoading(true);
     if (validate()) {
       if (newGame) {
-        console.log("here");
         socket.emit("newGame");
       } else {
         socket.emit("joining", { room });

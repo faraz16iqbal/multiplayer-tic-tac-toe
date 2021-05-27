@@ -42,6 +42,15 @@ io.on("connection", (socket) => {
     socket.emit("newGameCreated", room);
   });
 
+  //On the client submit event (on start page) to join a room
+  socket.on("joining", ({ room }) => {
+    if (rooms.has(room)) {
+      socket.emit("joinConfirmed");
+    } else {
+      socket.emit("errorMessage", "No room with that id found");
+    }
+  });
+
   socket.on("newRoomJoin", async ({ room, name }) => {
     if (room === "" || name === "") {
       io.to(socket.id).emit("joinError");
