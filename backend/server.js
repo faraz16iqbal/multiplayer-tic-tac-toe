@@ -38,6 +38,7 @@ io.on("connection", (socket) => {
   // working
   socket.on("newGame", async () => {
     const room = await makeNewRoom();
+    console.log(room);
     socket.emit("newGameCreated", room);
   });
 

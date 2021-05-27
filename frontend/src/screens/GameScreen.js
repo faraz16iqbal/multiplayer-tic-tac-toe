@@ -1,7 +1,7 @@
 import React from "react";
 
-const GameScreen = () => {
-  return <div></div>;
+const GameScreen = ({ history, location }) => {
+  return <div>GAME SCREEN</div>;
 };
 
 export default GameScreen;

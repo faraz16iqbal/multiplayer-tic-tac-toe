@@ -4,7 +4,7 @@ import HomeScreen from "./screens/HomeScreen";
 
 const App = () => (
   <Router>
-    <Route path="/" component={HomeScreen} />
+    <Route path="/" exact component={HomeScreen} />
     <Route path="/game" component={GameScreen} />
   </Router>
 );
