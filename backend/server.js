@@ -5,10 +5,13 @@ const httpServer = require("http").createServer(app);
 
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: "*",
+    origin: "http://localhost:3001",
+    methods: ["GET", "POST"],
+    credentials: true,
+    transports: ["websocket", "polling"],
   },
+  allowEIO3: true,
 });
-
 import {
   rooms,
   makeNewRoom,

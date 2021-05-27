@@ -1,7 +1,21 @@
-import React from "react";
+import React, { Component } from "react";
+import { socket } from "../config/socket";
 
-const HomeScreen = () => {
-  return <div></div>;
-};
+export default class HomeScreen extends Component {
+  state = {
+    step: 1,
+    name: "",
+    newGame: null,
+    room: "",
+    loading: false,
+    serverConfirmed: false,
+    error: false,
+    errorMessage: "",
+  };
 
-export default HomeScreen;
+  componentDidMount() {}
+
+  render() {
+    return <div>Hello </div>;
+  }
+}

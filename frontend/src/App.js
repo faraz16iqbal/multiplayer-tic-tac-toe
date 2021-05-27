@@ -2,11 +2,11 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import GameScreen from "./screens/GameScreen";
 import HomeScreen from "./screens/HomeScreen";
 
-const App = () => {
+const App = () => (
   <Router>
-    <Route path="/game" exactscomponent={GameScreen} />
-    <Route path="/" exact component={HomeScreen} />
-  </Router>;
-};
+    <Route path="/" component={HomeScreen} />
+    <Route path="/game" component={GameScreen} />
+  </Router>
+);
 
 export default App;
