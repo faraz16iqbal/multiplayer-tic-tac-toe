@@ -1,6 +1,5 @@
 import cors from "cors";
 import Player from "./utils/player.js";
-import Board from "./utils/board.js";
 const app = require("express")();
 const httpServer = require("http").createServer(app);
 const io = require("socket.io")(httpServer);
@@ -78,14 +77,15 @@ io.on("connection", (socket) => {
         player.name,
       ]);
       io.to(room).emit("starting", { gameState, players, turn });
-    } else if (peopleInRoom === 3) {
+    } else if (peopleInRoom >= 3) {
       socket.leave(room);
-      kick(room);
+      quit(room);
       io.to(socket.id).emit("joinError");
     }
 
+    // game logic
     socket.on("move", ({ room, piece, index }) => {
-      currentBoard = rooms.get(room).board;
+      let currentBoard = rooms.get(room).board;
       currentBoard.move(index, piece);
 
       if (currentBoard.checkWinner(piece)) {
@@ -105,8 +105,28 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("disconnect", () => {
-    console.log("User disconnected");
+  socket.on("disconnecting", () => {
+    //Get all the rooms that the socket is currently subscribed to
+    const currentRooms = Object.keys(socket.rooms);
+    //In this game an object can only have 2 rooms max so we check for that
+    if (currentRooms.length === 2) {
+      //The game room is always the second element of the list
+      const room = currentRooms[1];
+      const num = getRoomPlayersNum(room);
+      //If one then no one is left so we remove the room from the mapping
+      if (num === 1) {
+        rooms.delete(room);
+      }
+      //If 2 then there is one person left so we remove the socket leaving from the player list and
+      //emit a waiting event to the other person
+      if (num === 2) {
+        currentRoom = rooms.get(room);
+        currentRoom.players = currentRoom.players.filter(
+          (player) => player.id !== socket.id
+        );
+        io.to(room).emit("waiting");
+      }
+    }
   });
 });
 
