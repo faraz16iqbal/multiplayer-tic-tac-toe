@@ -1,10 +1,12 @@
 const { v4 } = require("uuid");
 
-export const genRoom = () => {
+const genRoom = () => {
   return v4().replaceAll("-", "").slice(0, 15).toUpperCase();
   // return "12345";
 };
 
-export const randomPiece = () => {
+const randomPiece = () => {
   return Math.random() > 0.5 ? "X" : "O";
 };
+
+module.exports = { genRoom, random };
