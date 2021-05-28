@@ -3,9 +3,11 @@ const dotenv = require("dotenv");
 const Player = require("./utils/player.js");
 const app = require("express")();
 const httpServer = require("http").createServer(app);
+const router = require("./router.js");
 
 dotenv.config();
 app.use(cors());
+app.use(router);
 
 const {
   rooms,
