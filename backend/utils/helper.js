@@ -1,9 +1,8 @@
 const { v4 } = require("uuid");
 
-// randomly generate 5 characters
+// generate unquie id
 const genRoom = () => {
   return v4().replaceAll("-", "").slice(0, 5).toUpperCase();
-  // return "12345";
 };
 
 const randomPiece = () => {
