@@ -19,8 +19,10 @@ const HomeScreen = ({ history }) => {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    socket.on("connection", (data) => {
-      console.log("Joined");
+    console.log("check 1", socket.connected);
+    socket.on("connect", function () {
+      console.log("check 2", socket.connected);
+      console.log(socket.id);
     });
 
     socket.on("newGameCreated", (room) => {
