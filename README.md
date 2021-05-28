@@ -1,7 +1,5 @@
-# React Custom Boilerplate
-Basic React Boilerplate with minimal dependencies. 
-
-## Quick Start
+# Tic-Tac-Toe
+Multiplayer Tic-Tac-Toe game using Node.JS and React.
 
 ``` bash
 # Install dependencies
