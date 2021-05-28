@@ -32,7 +32,6 @@ const HomeScreen = ({ history }) => {
     if (serverConfirmed) {
       history.push(`/game?room=${room}&name=${name}`);
     }
-    // create display error function
     socket.on("errorMessage", (msg) => {});
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
