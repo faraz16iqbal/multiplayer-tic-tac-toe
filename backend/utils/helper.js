@@ -9,4 +9,4 @@ const randomPiece = () => {
   return Math.random() > 0.5 ? "X" : "O";
 };
 
-module.exports = { genRoom, random };
+module.exports = { genRoom, randomPiece };
