@@ -30,13 +30,7 @@ const io = require("socket.io")(httpServer, {
 // SOCKET LOGIC
 
 io.on("connection", (socket) => {
-  console.log("a user has entered");
-  socket.emit("connected", { id: socket.id }); // STEP 5 ::=> Notify request cllient that it is not connected with server
-
-  //test
-  socket.on("test", (msg) => {
-    io.emit("message", msg);
-  });
+  io.emit("connection", { id: socket.id }); // STEP 5 ::=> Notify request cllient that it is not connected with server
 
   // working
   socket.on("newGame", async () => {
