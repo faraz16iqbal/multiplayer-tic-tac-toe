@@ -20,6 +20,7 @@ const HomeScreen = ({ history }) => {
 
   useEffect(() => {
     socket.on("newGameCreated", (room) => {
+      console.log(room);
       setRoom(room);
       setServerConfirmed(true);
     });
@@ -75,12 +76,13 @@ const HomeScreen = ({ history }) => {
     if (validate()) {
       if (newGame) {
         socket.emit("newGame");
+        console.log("HERE");
       } else {
+        console.log("HERE!!");
+
         socket.emit("joining", { room });
       }
     } else {
-      console.log("here1");
-
       setTimeout(() => setLoading(false), 1000);
       displayError(
         newGame
