@@ -5,7 +5,7 @@ import qs from "qs";
 import { socket } from "../config/socket";
 import Wait from "../components/Wait";
 import Square from "../components/Square";
-import { Container } from "react-bootstrap";
+import { Button, Container } from "react-bootstrap";
 class GameSreen extends Component {
   state = {
     game: new Array(9).fill(null),
@@ -180,9 +180,18 @@ class GameSreen extends Component {
           <Wait display={this.state.waiting} room={this.state.room} />
           <p className="turn">{statusMessage}</p>
           <div className="board">{squareArray}</div>
-          {/* <ScoreBoard data={{player1:['You', this.state.currentPlayerScore], player2:[this.state.opponentPlayer[0], this.state.opponentPlayer[1]]}}/>
-          <PlayAgain end={this.state.end} onClick={this.playAgainRequest}/> */}{" "}
-          */}
+          {!end ? (
+            <Button
+              variant="light"
+              className="px-4 py-2 mt-5"
+              style={{ fontSize: "1.35rem" }}
+              onClick={() => history.push("/")}
+            >
+              Go to Main Menu
+            </Button>
+          ) : (
+            ""
+          )}
         </Container>
       );
     }
