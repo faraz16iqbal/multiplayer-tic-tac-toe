@@ -1,4 +1,5 @@
 import cors from "cors";
+import dotenv from "dotenv";
 import Player from "./utils/player.js";
 const app = require("express")();
 const httpServer = require("http").createServer(app);
@@ -20,8 +21,9 @@ import {
   quit,
   getNumOfPlayers,
   assignPiece,
-} from "./utils/functions";
+} from "./utils/functions.js";
 
+dotenv.config();
 app.use(cors());
 
 // SOCKET LOGIC

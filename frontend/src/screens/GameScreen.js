@@ -180,7 +180,7 @@ class GameSreen extends Component {
           <Wait display={this.state.waiting} room={this.state.room} />
           <p className="turn">{statusMessage}</p>
           <div className="board">{squareArray}</div>
-          {!end ? (
+          {end ? (
             <Button
               variant="light"
               className="px-4 py-2 mt-5"
