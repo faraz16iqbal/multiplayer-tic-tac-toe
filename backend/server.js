@@ -19,7 +19,7 @@ const {
 
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: process.env.ORIGIN,
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
     credentials: true,
     transports: ["websocket", "polling"],
