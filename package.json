@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Multiplayer Tic-Tac-Toe Game",
   "main": "server.js",
-  "types": "commonjs, module",
+  "type": "commonjs",
   "scripts": {
     "start": "node backend/server",
     "server": "nodemon --exec babel-node backend/server",

@@ -1,6 +1,6 @@
-import cors from "cors";
-import dotenv from "dotenv";
-import Player from "./utils/player.js";
+const cors = require("cors");
+const dotenv = require("dotenv");
+const Player = require("./utils/player.js");
 const app = require("express")();
 const httpServer = require("http").createServer(app);
 
@@ -13,7 +13,7 @@ const io = require("socket.io")(httpServer, {
   },
   allowEIO3: true,
 });
-import {
+const {
   rooms,
   makeNewRoom,
   joinRoom,
@@ -21,7 +21,7 @@ import {
   quit,
   getNumOfPlayers,
   assignPiece,
-} from "./utils/functions.js";
+} = require("./utils/functions.js");
 
 dotenv.config();
 app.use(cors());

@@ -1,11 +1,11 @@
-import { genRoom, randomPiece } from "./helper.js";
-import Board from "./board.js";
+const { genRoom, randomPiece } = require("./helper.js");
+const Board = require("./board");
 // import { rooms } from "../server.js";
 
 // map to store room data {roomid:str, players:Array(2)}
-export let rooms = new Map();
+let rooms = new Map();
 
-export const makeNewRoom = async () => {
+const makeNewRoom = async () => {
   let newRoom = await genRoom();
   while (rooms.has(newRoom)) {
     newRoom = await genRoom();
@@ -15,7 +15,7 @@ export const makeNewRoom = async () => {
   return newRoom;
 };
 
-export const joinRoom = async (player, room) => {
+const joinRoom = async (player, room) => {
   try {
     let currentRoom = rooms.get(room);
     currentRoom.players.push(player);
@@ -25,12 +25,12 @@ export const joinRoom = async (player, room) => {
   }
 };
 
-export const quit = (room) => {
+const quit = (room) => {
   let tempRoom = rooms.get(room);
   tempRoom.players.pop();
 };
 
-export const getNumOfPlayers = (room) => {
+const getNumOfPlayers = (room) => {
   try {
     console.log(rooms.get(room).players);
     return rooms.get(room).players.length;
@@ -39,7 +39,7 @@ export const getNumOfPlayers = (room) => {
   }
 };
 
-export const assignPiece = (room) => {
+const assignPiece = (room) => {
   const firstPiece = randomPiece();
   const lastPiece = firstPiece === "X" ? "O" : "X";
 
@@ -48,8 +48,18 @@ export const assignPiece = (room) => {
   currentRoom.players[1].piece = lastPiece;
 };
 
-export const newGame = (room) => {
+const newGame = (room) => {
   let currentRoom = rooms.get(room);
   const board = new Board();
   currentRoom.board = board;
+};
+
+module.exports = {
+  newGame,
+  assignPiece,
+  getNumOfPlayers,
+  quit,
+  joinRoom,
+  makeNewRoom,
+  rooms,
 };
