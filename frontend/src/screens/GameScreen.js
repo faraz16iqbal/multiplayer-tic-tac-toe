@@ -55,7 +55,7 @@ class GameSreen extends Component {
     this.socket.on("update", ({ gameState, turn }) =>
       this.handleUpdate(gameState, turn)
     );
-    this.socket.on("winner", ({ gameState, id }) =>
+    this.socket.on("winner", ({ gameState, id, winState }) =>
       this.handleWin(id, gameState)
     );
     this.socket.on("draw", ({ gameState }) => this.handleDraw(gameState));
@@ -79,6 +79,7 @@ class GameSreen extends Component {
     const { game, piece, end, turn, room } = this.state;
     if (!game[index] && !end && turn) {
       this.socket.emit("move", { room, piece, index });
+      console.log(game, piece, end, turn, room);
     }
   };
 
@@ -166,6 +167,7 @@ class GameSreen extends Component {
     } = this.state;
 
     if (joinError) {
+      alert("Error while joining, redirecting to home page!");
       history.push("/");
     } else {
       const squareArray = [];
@@ -178,10 +180,9 @@ class GameSreen extends Component {
           <Wait display={this.state.waiting} room={this.state.room} />
           <p className="turn">{statusMessage}</p>
           <div className="board">{squareArray}</div>
-
-          {/* <Status message={this.s tate.statusMessage}/>
-          <ScoreBoard data={{player1:['You', this.state.currentPlayerScore], player2:[this.state.opponentPlayer[0], this.state.opponentPlayer[1]]}}/>
-          <PlayAgain end={this.state.end} onClick={this.playAgainRequest}/> */}
+          {/* <ScoreBoard data={{player1:['You', this.state.currentPlayerScore], player2:[this.state.opponentPlayer[0], this.state.opponentPlayer[1]]}}/>
+          <PlayAgain end={this.state.end} onClick={this.playAgainRequest}/> */}{" "}
+          */}
         </Container>
       );
     }

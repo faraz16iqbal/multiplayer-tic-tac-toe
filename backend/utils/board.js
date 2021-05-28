@@ -32,9 +32,19 @@ class Board {
   }
 
   checkWinner(player) {
-    return this.winStates.some((state) =>
-      state.every((position) => this.game[position] === player)
-    );
+    let currState = null;
+    this.winStates.some((state) => {
+      const flag = state.every((position) => this.game[position] === player);
+      if (flag) {
+        currState = state;
+        return;
+      }
+    });
+    if (currState) {
+      return currState;
+    } else {
+      return false;
+    }
   }
 
   checkDraw() {

@@ -76,7 +76,6 @@ io.on("connection", (socket) => {
       assignPiece(room);
       const currentPlayers = rooms.get(room).players;
 
-      console.log(currentPlayers);
       for (const player of currentPlayers) {
         io.to(player.id).emit("pieceAssignment", {
           piece: player.piece,
@@ -103,13 +102,26 @@ io.on("connection", (socket) => {
 
     // game logic
     socket.on("move", ({ room, piece, index }) => {
-      // console.log(room, piece, index);
       let currentBoard = rooms.get(room).board;
       currentBoard.move(index, piece);
 
-      if (currentBoard.checkWinner(piece)) {
+      const win = currentBoard.checkWinner(piece);
+
+      if (win !== false) {
+        // set board to winning state
+        let winState = new Array(9).fill(null);
+        winState = currentBoard.game.map((w, id) => {
+          if (win.includes(id)) {
+            return w;
+          }
+          return null;
+        });
+
+        console.log(winState);
+        console.log(currentBoard.game);
+
         io.to(room).emit("winner", {
-          gameState: currentBoard.game,
+          gameState: winState,
           id: socket.id,
         });
       } else if (currentBoard.checkDraw()) {
