@@ -2,8 +2,11 @@
 Multiplayer Tic-Tac-Toe game using Node.JS and React.
 
 ``` bash
-# Install dependencies
-npm i && cd .. && cd frontend && npm i
+# Install backend dependencies
+npm i
+
+# Install frontend dependencies
+cd frontend && npm i
 
 # Serve app
 npm run dev
