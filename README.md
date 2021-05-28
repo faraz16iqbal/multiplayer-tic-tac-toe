@@ -11,6 +11,9 @@ cd frontend && npm install
 # Serve app
 npm run dev
 
-# Build for production
-npm run build
-```
+# Serve frontend
+npm run client
+
+# Serve backend
+npm run server
+
