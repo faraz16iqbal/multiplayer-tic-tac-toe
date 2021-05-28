@@ -21,7 +21,8 @@ const {
 
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: "https://tic-tac-toe-multiplayer.netlify.app",
+    // origin: "https://tic-tac-toe-multiplayer.netlify.app",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
     credentials: true,
     transports: ["websocket", "polling"],
@@ -35,8 +36,8 @@ io.on("connection", (socket) => {
   io.emit("connection", { id: socket.id }); // STEP 5 ::=> Notify request cllient that it is not connected with server
 
   // working
-  socket.on("newGame", async () => {
-    const room = await makeNewRoom();
+  socket.on("newGame", () => {
+    const room = makeNewRoom();
     socket.emit("newGameCreated", room);
   });
 

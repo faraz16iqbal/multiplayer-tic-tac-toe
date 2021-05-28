@@ -5,10 +5,10 @@ const Board = require("./board");
 // map to store room data {roomid:str, players:Array(2)}
 let rooms = new Map();
 
-const makeNewRoom = async () => {
-  let newRoom = await genRoom();
+const makeNewRoom = () => {
+  let newRoom = genRoom();
   while (rooms.has(newRoom)) {
-    newRoom = await genRoom();
+    newRoom = genRoom();
   }
 
   rooms.set(newRoom, { roomId: newRoom, players: [], board: null });
