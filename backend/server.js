@@ -21,8 +21,8 @@ const {
 
 const io = require("socket.io")(httpServer, {
   cors: {
-    // origin: "https://tic-tac-toe-multiplayer.netlify.app",
-    origin: "http://localhost:3000",
+    origin: "https://tic-tac-toe-multiplayer.netlify.app",
+    // origin: "http://localhost:3000",
     methods: ["GET", "POST"],
     credentials: true,
     transports: ["websocket", "polling"],
