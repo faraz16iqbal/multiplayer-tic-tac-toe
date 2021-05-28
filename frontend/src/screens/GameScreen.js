@@ -115,6 +115,7 @@ class GameSreen extends Component {
   handleDraw(gameState) {
     this.setBoard(gameState);
     this.setState({ end: true, statusMessage: "Draw" });
+    this.setMessage();
   }
 
   setMessage() {
@@ -135,6 +136,13 @@ class GameSreen extends Component {
   setBoard(gameState) {
     this.setState({ game: gameState });
   }
+
+  handleRestart(gameState, turn) {
+    this.setState({ game: gameState, end: false });
+    this.setTurn(turn);
+    this.setMessage();
+  }
+
   renderSquare(i) {
     const { game, piece, turn, end } = this.state;
 
@@ -153,18 +161,7 @@ class GameSreen extends Component {
 
   render() {
     const { history } = this.props;
-    const {
-      game,
-      piece,
-      joinError,
-      waiting,
-      room,
-      turn,
-      opponentPlayer,
-      currentPlayerScore,
-      end,
-      statusMessage,
-    } = this.state;
+    const { joinError, waiting, room, end, statusMessage } = this.state;
 
     if (joinError) {
       alert("Error while joining, redirecting to home page!");
@@ -177,18 +174,28 @@ class GameSreen extends Component {
       }
       return (
         <Container className="d-flex flex-column align-items-center justify-content-center choice-container">
-          <Wait display={this.state.waiting} room={this.state.room} />
+          <Wait display={waiting} room={room} />
           <p className="turn">{statusMessage}</p>
           <div className="board">{squareArray}</div>
           {end ? (
-            <Button
-              variant="light"
-              className="px-4 py-2 mt-5"
-              style={{ fontSize: "1.35rem" }}
-              onClick={() => history.push("/")}
-            >
-              Go to Main Menu
-            </Button>
+            <div>
+              <Button
+                variant="dark"
+                className="px-4 py-2 mt-5"
+                style={{ fontSize: "1.35rem" }}
+                onClick={() => this.socket.emit("playAgain", room)}
+              >
+                Let's Play Again
+              </Button>
+              <Button
+                variant="light"
+                className="px-4 py-2 mt-5 mx-3"
+                style={{ fontSize: "1.35rem" }}
+                onClick={() => history.push("/")}
+              >
+                Go to Main Menu
+              </Button>
+            </div>
           ) : (
             ""
           )}

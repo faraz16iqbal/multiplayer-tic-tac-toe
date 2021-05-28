@@ -21,8 +21,8 @@ const {
 
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: "https://tic-tac-toe-multiplayer.netlify.app",
-    // origin: "http://localhost:3000",
+    // origin: "https://tic-tac-toe-multiplayer.netlify.app",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
     credentials: true,
     transports: ["websocket", "polling"],
@@ -65,7 +65,6 @@ io.on("connection", (socket) => {
     const peopleInRoom = getNumOfPlayers(room);
 
     if (peopleInRoom === 1) {
-      console.log("HERE");
       io.to(room).emit("waiting");
     }
     //The right amount of people so we start the game
@@ -117,9 +116,6 @@ io.on("connection", (socket) => {
           return null;
         });
 
-        console.log(winState);
-        console.log(currentBoard.game);
-
         io.to(room).emit("winner", {
           gameState: winState,
           id: socket.id,
@@ -133,6 +129,24 @@ io.on("connection", (socket) => {
           turn: currentBoard.turn,
         });
       }
+    });
+  });
+
+  socket.on("playAgain", (room) => {
+    let currentRoom = rooms.get(room);
+    currentRoom.board.reset();
+
+    assignPiece(room);
+    let currentPlayers = currentRoom.players;
+    for (const player of currentPlayers) {
+      io.to(player.id).emit("pieceAssignment", {
+        piece: player.piece,
+        id: player.id,
+      });
+    }
+    io.to(room).emit("restart", {
+      gameState: currentRoom.board.game,
+      turn: currentRoom.board.turn,
     });
   });
 
