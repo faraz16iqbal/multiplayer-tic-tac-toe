@@ -32,6 +32,7 @@ const io = require("socket.io")(httpServer, {
 
 // SOCKET LOGIC
 
+
 io.on("connection", (socket) => {
   io.emit("connection", { id: socket.id }); // STEP 5 ::=> Notify request cllient that it is not connected with server
 
